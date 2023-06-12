@@ -11,12 +11,14 @@ Requirement:
 7. Evaluate Result of Simulation: X (Jin Xuan and Xim Rui) 
 
 ***
-IMPORTANT
-SZ Message to Rest of The Members:
+**IMPORTANT**
+
+***SZ Message to Rest of The Members:***
+
 Eventhough the code is almost complete but there are some parts that stil need to be done. For example, 2, 3 and 7 need to be done by this Thursday because our due date is on Friday (16 June).
+
 The code that I have implemented can generate random item, service time and interarrival time but it does not fulfill the requirement yet because the method that I use is rand() which is not sufficient enough.
-*
-*
+
 Dear Jin Xuan and Xim Rui, you guys can refer to my code and the senior code sample (given by Xim Rui) to do the random number generator(Part 2 and 3) and the last part(Part 7).
 If there's any problems that you guys encounter when doing the assignment, feel free to message in our WhatsApp group chat, some of us might be able to help you guys out.
 :)) 
