@@ -4,24 +4,80 @@ function output=mainSimulator()
     %Fixed Number of Users
     count_cus = Input ('Please enter the total no. customer for this simulation: ', 99);
     
-%-------------------------------------------------Random Item for Customer--------------------------------------------------------------------------%
-minItem = 1;
-maxItem = 21; 
+%-------------------------------------------------Random Generator for Customer--------------------------------------------------------------------------% 
 
-for i = 1:count_cus
-    randomItem(i) = floor((maxItem - minItem) * rand() + minItem);
+
+% User input to choose the type of random number generator
+disp('Choose the type of random number generator:')
+disp('1. Mixed LCG')
+disp('2. Additive LCG')
+disp('3. Multiplication LCG')
+disp('4. Random Variate Generator for Exponential Distribution')
+disp('5. Random Variate Generator for Uniform Distribution')
+seed = ceil(rand() * 52337);
+
+rngType = input('Enter the corresponding number: ');
+
+% Adjust the range of random numbers based on the selected generator type
+switch rngType
+    case 1 % Mixed LCG
+        maxRange = 20;
+        randomItem = mod(generateRandom(count_cus, maxRange, rngType, seed), maxRange);
+        randomItem = randomItem + 1;
+    case 2 % Additive LCG
+        maxRange = 20;
+        randomItem = mod(generateRandom(count_cus, maxRange, rngType, seed), maxRange);
+        randomItem = randomItem + 1;
+    case 3
+        maxRange = 20;
+        randomItem = mod(generateRandom(count_cus, maxRange, rngType, seed), maxRange);
+        randomItem = randomItem + 1;
+        
+    case 4 % Random Variate Generator for Exponential Distribution
+        maxRange = 20;
+        randomItem = generateRandom(count_cus, maxRange, rngType, seed);
+    case 5 % Random Variate Generator for Uniform Distribution
+        maxRange = 20;
+        randomItem = generateRandom(count_cus, maxRange, rngType, seed);
+    otherwise
+        error('Invalid option selected.');
 end
 
-for i= 1:count_cus
-    randomServiceTime(i) = floor(rand()*99) + 1;
-end
-
-for i= 1:count_cus
-    randomInterArrivalTime(i) = floor(rand()*99) + 1;
-end 
 
     
-%---------------------------------------------------------Calculation=====--------------------------------------------------------------------------%
+switch rngType
+    case 1 % Mixed LCG       
+        maxRange = 100;
+        randomInterArrivalTime = mod(generateRandom(count_cus, maxRange, rngType, seed), maxRange);
+        randomInterArrivalTime = randomInterArrivalTime + 1;
+        randomServiceTime = mod(generateRandom(count_cus, maxRange, rngType, seed), maxRange);
+        randomServiceTime = randomServiceTime + 1;
+    case 2 % Additive LCG
+        maxRange = 100;
+        randomInterArrivalTime = mod(generateRandom(count_cus, maxRange, rngType, seed), maxRange);
+        randomInterArrivalTime = randomInterArrivalTime + 1;
+        randomServiceTime = mod(generateRandom(count_cus, maxRange, rngType, seed), maxRange);
+        randomServiceTime = randomServiceTime + 1;
+    case 3 % Multiplicative LCG
+        maxRange = 100;
+        randomInterArrivalTime = mod(generateRandom(count_cus, maxRange, rngType, seed), maxRange);
+        randomInterArrivalTime = randomInterArrivalTime + 1;
+        randomServiceTime = mod(generateRandom(count_cus, maxRange, rngType, seed), maxRange);
+        randomServiceTime = randomServiceTime + 1;
+        
+    case 4 % Random Variate Generator for Exponential Distribution
+        maxRange = 100;
+        randomInterArrivalTime = generateRandom(count_cus, maxRange, rngType, seed);
+        randomServiceTime = generateRandom(count_cus, maxRange, rngType, seed);
+    case 5 % Random Variate Generator for Uniform Distribution
+        maxRange = 100;
+        randomInterArrivalTime = generateRandom(count_cus, maxRange, rngType, seed);
+        randomServiceTime = generateRandom(count_cus, maxRange, rngType, seed);
+    otherwise
+        error('Invalid option selected.');
+end
+
+%---------------------------------------------------------Calculation---------------------------------------------------------------------------------%
 
 %Inter-Arrival Time 
 
@@ -91,9 +147,9 @@ while (i < count_cus & stop < 2)
 end
 
 %To track customer on counter
-noCusC1 = 1;
-noCusC2 = 1;
-noCusC3 = 1;
+noC1 = 1;
+noC2 = 1;
+noC3 = 1;
 
 %For Second Loop and Above
 for loop = 2:count_cus
@@ -101,8 +157,7 @@ for loop = 2:count_cus
     %Express Counter
      if randomItem(loop) <= 5 
         counter(loop) = 3;
-        arrivalTime(loop);
-        serviceBeginEx(loop) = serviceCheck(serviceEndEx(noCusC3), arrivalTime(loop)); 
+        serviceBeginEx(loop) = serviceCheck(serviceEndEx(noC3), arrivalTime(loop)); 
         serviceTimeEx(loop) = calCounterEx(randomServiceTime(loop));
         serviceEndEx(loop) = serviceTimeEx(loop) + serviceBeginEx(loop);
         waitingTimeEx(loop) = serviceBeginEx(loop) - arrivalTime(loop);
@@ -115,15 +170,14 @@ for loop = 2:count_cus
         serviceEnd2(loop) = 0;
         serviceBegin(loop) = serviceBeginEx(loop);
         serviceEnd(loop) = serviceEndEx(loop);
-        noCusC3 = loop;
+        noC3 = loop;
     
     %Go to Counter 1 or 2
     elseif randomItem(loop) > 5 & randomItem(loop) <= 20
         %Counter 1 busy, counter 2
-        if serviceEnd1(noCusC1) > serviceEnd2(noCusC2)
+        if serviceEnd1(noC1) > serviceEnd2(noC2)
             counter(loop) = 2;
-            arrivalTime(loop);
-            serviceBegin2(loop) = serviceCheck(serviceEnd2(noCusC2),arrivalTime(loop));
+            serviceBegin2(loop) = serviceCheck(serviceEnd2(noC2),arrivalTime(loop));
             serviceTime2(loop) = calCounter2(randomServiceTime(loop));
             serviceEnd2(loop) = serviceTime2(loop) + serviceBegin2(loop);
             waitingTime2(loop) = serviceBegin2(loop) - arrivalTime(loop);
@@ -136,12 +190,11 @@ for loop = 2:count_cus
             serviceEndEx(loop) = 0;
             serviceBegin(loop) = serviceBegin2(loop);
             serviceEnd(loop) = serviceEnd2(loop);
-            noCusC2 = loop;
+            noC2 = loop;
         %Counter 2 busy, counter 1
-        elseif serviceEnd2(noCusC2) > serviceEnd1(noCusC1)
+        elseif serviceEnd2(noC2) > serviceEnd1(noC1)
             counter(loop) = 1;
-            arrivalTime(loop);
-            serviceBegin1(loop) = serviceCheck(serviceEnd1(noCusC1), arrivalTime(loop));
+            serviceBegin1(loop) = serviceCheck(serviceEnd1(noC1), arrivalTime(loop));
             serviceTime1(loop) = calCounter1(randomServiceTime(loop));
             serviceEnd1(loop) = serviceTime1(loop) + serviceBegin1(loop);
             waitingTime1(loop) = serviceBegin1(loop) - arrivalTime(loop);
@@ -154,12 +207,12 @@ for loop = 2:count_cus
             serviceEndEx(loop) = 0;
             serviceBegin(loop) = serviceBegin1(loop);
             serviceEnd(loop) = serviceEnd1(loop);
-            noCusC1 = loop;
+            noC1 = loop;
             
-        elseif serviceEnd1(noCusC1) == serviceEnd2(noCusC2)
+        elseif serviceEnd1(noC1) == serviceEnd2(noC2)
             counter(loop) = 1;
             arrivalTime(loop);
-            serviceBegin1(loop) = serviceCheck(serviceEnd1(noCusC1), arrivalTime(loop));
+            serviceBegin1(loop) = serviceCheck(serviceEnd1(noC1), arrivalTime(loop));
             serviceTime1(loop) = calCounter1(randomServiceTime(loop));
             serviceEnd1(loop) = serviceTime1(loop) + serviceBegin1(loop);
             waitingTime1(loop) = serviceBegin1(loop) - arrivalTime(loop);
@@ -172,7 +225,7 @@ for loop = 2:count_cus
             serviceEndEx(loop) = 0;
             serviceBegin(loop) = serviceBegin1(loop);
             serviceEnd(loop) = serviceEnd1(loop);
-            noCusC1 = loop;
+            nosC1 = loop;
         end
     end
     i = i + 1;
@@ -253,11 +306,13 @@ disp('--------------------------------------------------------------------------
 disp(' ')
 
 
+%------------------------------------------------------- EVALUATION -------------------------------------------------------
 
-    
-
-
-
+if serviceEnd2(noC2) ~= 0
+resultEva(count_cus, counter, waitingTime1, waitingTime2, waitingTimeEx, serviceEnd1, serviceEnd2, serviceEndEx, interArrivalTime, arrivalTime, serviceTime1, serviceTime2, serviceTimeEx, timeSpend1, timeSpend2, timeSpendEx);
+else
+resultEva(count_cus, counter, waitingTime1, 0, waitingTimeEx, serviceEnd1, 0, serviceEndEx, interArrivalTime, arrivalTime, serviceTime1, 0, serviceTimeEx, timeSpend1, 0, timeSpendEx);
+end
 
 
     
